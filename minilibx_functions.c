@@ -6,7 +6,7 @@
 /*   By: ael-youb <ael-youb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 14:53:57 by ael-youb          #+#    #+#             */
-/*   Updated: 2023/03/21 11:52:57 by ael-youb         ###   ########.fr       */
+/*   Updated: 2023/03/22 15:48:39 by ael-youb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,17 +50,23 @@ void	loop_draw_three_d(t_game *game, float height, float offset)
 	int		cpt;
 	int		j;
 
-	j = offset;
+	j = 0;
 	cpt = 0;
 	while (cpt < 1)
 	{
+		while (j < offset)
+		{
+			pixel_put(game->img, j, (230 + game->store->r) + cpt,
+				0x0ADD8E6);
+				j++;
+		}
 		while (j < height + offset)
 		{
 			if (game->store->color)
-				pixel_put(game->img, j, (530 + game->store->r) + cpt,
+				pixel_put(game->img, j, (230 + game->store->r) + cpt,
 					0x00002888);
 			else
-				pixel_put(game->img, j, (530 + game->store->r) + cpt,
+				pixel_put(game->img, j, (230 + game->store->r) + cpt,
 					0x80090888);
 			j++;
 		}
@@ -81,9 +87,9 @@ void	draw_three_d(t_game *game, float distance, float ra)
 	if (plan_fisheye > 2 * PI)
 		plan_fisheye -= 2 * PI;
 	distance = distance * cos(plan_fisheye);
-	height = (8 * 2 * 320) / distance; //bizarre value
-	if (height > 320)
-		height = 320;
+	height = (8 * 2 * 512) / distance; //bizarre value
+	if (height > 512)
+		height = 512;
 	offset = 200 - height / 2;
 	loop_draw_three_d(game, height, offset);
 }
@@ -106,9 +112,9 @@ void	add_to_image(t_game *game)
 		j = 0;
 		i++;
 	}
-	draw_map(game);
-	draw_player(game);
+	//draw_player(game);
 	draw_ray(game);
+	draw_map(game);
 	mlx_put_image_to_window(game->win->mlx, game->win->mlx_win, game->img->img, 0, 0);
 }
 
@@ -122,14 +128,14 @@ void	draw_map(t_game *game)
 
 	x = 0;
 	y = 0;
-	pix = 512 / (game->map.grid_width);
+	pix = 512 / (game->map.grid_width * 2);
 	while (x < game->map.grid_width)
 	{
 		while (y < game->map.grid_width)
 		{
 			xo = x * pix;
 			yo = y * pix;
-			while (xo < ((x + 1) * pix) - 1) // 10px offset entre chaque case
+			while (xo < ((x + 1) * pix) - 1) // 1px offset entre chaque case
 			{
 				while (yo < ((y + 1) * pix) - 1)
 				{
