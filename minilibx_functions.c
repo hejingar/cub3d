@@ -6,7 +6,7 @@
 /*   By: ael-youb <ael-youb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 14:53:57 by ael-youb          #+#    #+#             */
-/*   Updated: 2023/03/22 15:48:39 by ael-youb         ###   ########.fr       */
+/*   Updated: 2023/03/23 14:57:14 by ael-youb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,30 @@ void	draw_player(t_game *game)
 	int	i;
 	int	j;
 
-	i = game->player_y;
-	j = game->player_x;
-	while (i < game->player_y + 5)
+	i = 75; //pix * nombre de cases minimap (ici -5 a +5)
+	j = 75;
+	while (i < 79)
 	{
-		while (j < game->player_x + 5)
+		while (j < 79)
 		{
 			pixel_put(game->img, i, j,
 				0x80090888);
 			j++;
 		}
-		j = game->player_x;
+		j = 75;
+		i++;
+	}
+	i = 75 + game->player_deltax;
+	j = 75 + game->player_deltay;
+	while (i < 78 + game->player_deltax)
+	{
+		while (j < 78 + game->player_deltay)
+		{
+			pixel_put(game->img, j, i,
+				0x00FF0000);
+			j++;
+		}
+		j = 75 + game->player_deltay;
 		i++;
 	}
 }
@@ -47,32 +60,26 @@ float	dist(float ax, float ay, float bx, float by)
 
 void	loop_draw_three_d(t_game *game, float height, float offset)
 {
-	int		cpt;
 	int		j;
 
 	j = 0;
-	cpt = 0;
-	while (cpt < 1)
+	while (j < offset)
 	{
-		while (j < offset)
-		{
-			pixel_put(game->img, j, (230 + game->store->r) + cpt,
-				0x0ADD8E6);
-				j++;
-		}
-		while (j < height + offset)
-		{
-			if (game->store->color)
-				pixel_put(game->img, j, (230 + game->store->r) + cpt,
-					0x00002888);
-			else
-				pixel_put(game->img, j, (230 + game->store->r) + cpt,
-					0x80090888);
+		pixel_put(game->img, j, (230 + game->store->r),
+			0x0ADD8E6);
 			j++;
-		}
-		j = offset;
-		cpt++;
 	}
+	while (j < height + offset)
+	{
+		if (game->store->color)
+			pixel_put(game->img, j, (230 + game->store->r),
+				0x00002888);
+		else
+			pixel_put(game->img, j, (230 + game->store->r),
+				0x80090888);
+		j++;
+	}
+	j = offset;
 }
 
 void	draw_three_d(t_game *game, float distance, float ra)
@@ -112,9 +119,9 @@ void	add_to_image(t_game *game)
 		j = 0;
 		i++;
 	}
-	//draw_player(game);
 	draw_ray(game);
 	draw_map(game);
+	draw_player(game);
 	mlx_put_image_to_window(game->win->mlx, game->win->mlx_win, game->img->img, 0, 0);
 }
 
@@ -122,44 +129,65 @@ void	draw_map(t_game *game)
 {
 	int	x;
 	int	y;
+	int	x_origin;
+	int	y_origin;
 	int	xo;
 	int	yo;
 	int	pix;
 
-	x = 0;
-	y = 0;
-	pix = 512 / (game->map.grid_width * 2);
-	while (x < game->map.grid_width)
+	x = (int)(game->player_x) / (512 / game->map.grid_height);
+	y = (int)(game->player_y) / (512 / game->map.grid_height);
+	x = x - 5;
+	y = y - 5;
+	x_origin = 0;
+	y_origin = 0;
+	pix = 512 / (game->map.grid_width);
+	while (x < (int)(game->player_x) / (512 / game->map.grid_height) + 5)
 	{
-		while (y < game->map.grid_width)
+		while (y < (int)(game->player_y) / (512 / game->map.grid_height) + 5)
 		{
-			xo = x * pix;
-			yo = y * pix;
-			while (xo < ((x + 1) * pix) - 1) // 1px offset entre chaque case
+			xo = x_origin * pix;
+			yo = y_origin * pix;
+			while (xo < ((x_origin + 1) * pix) - 1) // 1px offset entre chaque case
 			{
-				while (yo < ((y + 1) * pix) - 1)
+				while (yo < ((y_origin + 1) * pix) - 1)
 				{
-					pixel_put(game->img, xo, yo,
-						0x00000000);
-					if (game->map.grid[x][y] == '1')
+					if (x < 0 || x >= game->map.grid_height)
 					{
-						pixel_put(game->img, xo, yo,
+						break ;
+					}
+					if (y < 0 || y >= game->map.grid_height)
+					{
+						//printf("breaking : %d %d\n", y, x);
+						break ;
+					}
+					//printf("drawing to pixel %d %d\npix%d\n", yo, xo, pix);
+					pixel_put(game->img, yo, xo,
+						0x00000000);
+					if (game->map.grid[y][x] == '1')
+					{
+						pixel_put(game->img, yo, xo,
 							0x88800000);
 					}
 					else
 					{
-						pixel_put(game->img, xo, yo,
+						pixel_put(game->img, yo, xo,
 							0x99999999);
 					}
 					yo++;
 				}
-				yo = y * pix;
+				yo = y_origin * pix;
 				xo++;
 			}
+			//printf("drawn : %d %d\n", y, x);
 			y++;
+			y_origin++;
 		}
 		x++;
-		y = 0;
+		x_origin++;
+		y_origin = 0;
+		y = (int)(game->player_y) / (512 / game->map.grid_height);
+		y = y - 5;
 	}
 }
 
