@@ -92,12 +92,18 @@ int	hook_slide(int keycode, t_game *game)
 
 void	close_program(t_game *game)
 {
-	//NB: CLEAN LA MAP ici
 	mlx_destroy_window(game->win->mlx, game->win->mlx_win);
 	mlx_destroy_image(game->win->mlx, game->img->img);
+	if (game->north.img != NULL)
+		mlx_destroy_image(game->win->mlx, game->north.img);
+	if (game->south.img != NULL)
+		mlx_destroy_image(game->win->mlx, game->south.img);
+	if (game->east.img != NULL)
+		mlx_destroy_image(game->win->mlx, game->east.img);
+	if (game->west.img != NULL)
+		mlx_destroy_image(game->win->mlx, game->west.img);
 	mlx_destroy_display(game->win->mlx);
 	free(game->win->mlx);
-	free(game->store);
 	free_map(&game->map);
 	//free(game);
 

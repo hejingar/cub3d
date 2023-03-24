@@ -29,6 +29,7 @@
 # define P2 PI/2
 # define P3 3*PI/2
 # define DR 0.0174533 // 1 degre = DR radians
+# define RAY_NUMBER 480
 
 typedef struct s_map
 {
@@ -54,6 +55,8 @@ typedef struct s_data {
 	int				bpp;
 	int				ll;
 	int				endian;
+	int				w;
+	int				h;
 }				t_data;
 
 typedef struct s_vars {
@@ -81,6 +84,7 @@ typedef struct s_raystorage
 	float	vx;
 	float	vy;
 	float	distance;
+	int		actual_height;
 }				t_raystorage;
 
 typedef struct s_game
@@ -88,12 +92,16 @@ typedef struct s_game
 	t_map			map;
 	t_vars			*win;
 	t_data			*img;
+	t_data			north;
+	t_data			south;
+	t_data			east;
+	t_data			west;
 	float			player_x;
 	float			player_y;
 	float			player_deltax;
 	float			player_deltay;
 	float			player_angle;
-	t_raystorage	*store;
+	t_raystorage	store;
 }				t_game;
 
 //minilibx_functions
@@ -106,7 +114,7 @@ void	pixel_put(t_data *data, int x, int y, int color);
 float	dist(float ax, float ay, float bx, float by);
 
 //raycasting
-void	draw_ray(t_game *game);
+void	draw_rays(t_game *game);
 void	distance_h(t_game *game, int pix);
 void	distance_v(t_game *game, int pix);
 void	loop_distance_v(t_game *game, int pix);

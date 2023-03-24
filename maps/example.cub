@@ -1,7 +1,7 @@
-WE ./path_to_the_west_texture
-NO ./path_to_the_north_texture
-SO ./path_to_the_south_texture
-EA ./path_to_the_east_texture
+WE ./textures/metal.xpm
+NO ./textures/mur_moche.xpm
+SO ./textures/red_bricks.xpm
+EA ./textures/wood.xpm
 
 F 220,100,0
 C 225,30,0
